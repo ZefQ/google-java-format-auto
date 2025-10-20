@@ -1,0 +1,94 @@
+{
+  "name": "google-java-format-auto",
+  "displayName": "google-java-format-auto",
+  "description": "",
+  "version": "0.0.1",
+  "publisher": "zefq",
+  "engines": {
+    "vscode": "^1.103.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:java"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "java",
+        "aliases": [
+          "Java",
+          "java"
+        ],
+        "extensions": [
+          ".java"
+        ]
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Google Java Format",
+      "properties": {
+        "googleJavaFormat.aospStyle": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use AOSP style instead of Google style."
+        },
+        "googleJavaFormat.version": {
+          "type": "string",
+          "default": "1.30.0",
+          "description": "Vilken version av google-java-format som ska användas (ex. 1.28.0)."
+        },
+        "googleJavaFormat.downloadUrl": {
+          "type": "string",
+          "default": "https://github.com/google/google-java-format/releases/download/v${version}/google-java-format-${version}-all-deps.jar",
+          "description": "Mall för URL till JAR-filen. ${version} ersätts med vald version."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "google-java-format-auto.test",
+        "title": "Test Google Java Format Activation"
+      },
+      {
+        "command": "google-java-format-auto.updateJar",
+        "title": "Update Google Java Format JAR"
+      }
+    ],
+    "formatters": [
+      {
+        "language": "java",
+        "command": "google-java-format.format",
+        "title": "Google Java Format"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "fix": "eslint . --fix && prettier --write .",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run compile",
+    "package": "vsce package",
+    "test": "xvfb-run -a vscode-test run --extensionDevelopmentPath=$(pwd) --extensionTestsPath=$(pwd)/out/test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.103.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "3.6.2",
+    "eslint": "^9.38.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3"
+  }
+}
