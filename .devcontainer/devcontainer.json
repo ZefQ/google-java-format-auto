@@ -1,0 +1,41 @@
+{
+  "name": "Google Java Format VSCode Plugin Dev",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "forwardPorts": [],
+  "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
+  "remoteUser": "node",
+  // "features": {
+  //   "ghcr.io/devcontainers/features/git:1": {},
+  //   "ghcr.io/devcontainers/features/node:1": {
+  //     "version": "20"
+  //   },
+  //   "ghcr.io/devcontainers/features/java:1": {
+  //     "version": "21"
+  //   }
+  // },
+  "containerEnv": {},
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-next",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll": "always",
+          "source.organizeImports": "always"
+        },
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "eslint.validate": ["typescript"],
+        "eslint.alwaysShowStatus": true,
+        "eslint.format.enable": true
+      }
+    }
+  }
+}
