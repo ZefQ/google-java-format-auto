@@ -1,13 +1,19 @@
-name: Build and Test Extension
+name: Build, Test, Package & Release VS Code Extension
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version att publicera (t.ex. 0.1.0)"
+        required: true
+      publish_marketplace:
+        description: "Publicera till Marketplace också?"
+        type: boolean
+        default: false
 
 jobs:
   build:
+    name: Build and Test
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +28,7 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm@9
 
-      - name: Install dependencies with pnpm
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile=false
 
       - name: Compile TypeScript
@@ -39,3 +45,46 @@ jobs:
         with:
           name: google-java-format-auto
           path: "*.vsix"
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download packaged VSIX
+        uses: actions/download-artifact@v4
+        with:
+          name: google-java-format-auto
+          path: .
+
+      - name: Create GitHub Tag
+        id: create_tag
+        run: |
+          VERSION="v${{ github.event.inputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$VERSION" -m "Release $VERSION"
+          git push origin "$VERSION"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          files: "*.vsix"
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to VS Code Marketplace
+        if: ${{ github.event.inputs.publish_marketplace == 'true' }}
+        run: pnpm vsce publish -p ${{ secrets.VSCE_TOKEN }}
+        env:
+          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}

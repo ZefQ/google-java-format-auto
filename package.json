@@ -1,14 +1,36 @@
 {
   "name": "google-java-format-auto",
-  "displayName": "google-java-format-auto",
-  "description": "",
-  "version": "0.0.1",
+  "displayName": "Google Java Format (Auto)",
+  "description": "Automatically formats Java files using google-java-format — downloads the JAR automatically and supports version switching.",
+  "version": "0.1.0",
   "publisher": "zefq",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZefQ/google-java-format-auto.git"
+  },
+  "homepage": "https://github.com/ZefQ/google-java-format-auto",
+  "bugs": {
+    "url": "https://github.com/ZefQ/google-java-format-auto/issues"
+  },
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "keywords": [
+    "google-java-format",
+    "formatter",
+    "java",
+    "code-style",
+    "auto-format",
+    "zefq"
+  ],
   "engines": {
     "vscode": "^1.103.0"
   },
   "categories": [
-    "Other"
+    "Formatters",
+    "Programming Languages"
   ],
   "activationEvents": [
     "onLanguage:java"
@@ -45,6 +67,11 @@
           "type": "string",
           "default": "https://github.com/google/google-java-format/releases/download/v${version}/google-java-format-${version}-all-deps.jar",
           "description": "Mall för URL till JAR-filen. ${version} ersätts med vald version."
+        },
+        "googleJavaFormat.checksum": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Valfri SHA-256 checksumma som verifierar den nedladdade JAR-filen. Lämna tom för att hoppa över kontrollen."
         }
       }
     },
@@ -67,16 +94,22 @@
     ]
   },
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint \"src/**/*.{ts,js}\"",
     "format": "prettier --write .",
-    "fix": "eslint . --fix && prettier --write .",
-    "compile": "tsc -p ./",
+    "fix": "eslint \"src/**/*.{ts,js}\" --fix && npm run format --silent",
+    "clean": "node -e \"const fs=require('fs');fs.rmSync('out',{recursive:true,force:true});\"",
+    "compile": "npm run clean --silent && tsc -p ./",
     "watch": "tsc -watch -p ./",
     "vscode:prepublish": "npm run compile",
     "package": "vsce package",
-    "test": "xvfb-run -a vscode-test run --extensionDevelopmentPath=$(pwd) --extensionTestsPath=$(pwd)/out/test"
+    "test": "npm run test:unit",
+    "test:unit": "npm run compile && mocha --ui tdd \"out/test/**/*.unit.test.js\"",
+    "test:integration": "npm run compile && xvfb-run -a vscode-test run --extensionDevelopmentPath=$(pwd) --extensionTestsPath=$(pwd)/out/test/integration",
+    "test:all": "npm run test:unit && npm run test:integration"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "3.3.1",
+    "@eslint/js": "9.38.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
     "@types/vscode": "^1.103.0",
@@ -85,10 +118,12 @@
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "3.6.2",
-    "eslint": "^9.38.0",
+    "eslint": "^8.56.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "mocha": "^11.0.1",
     "prettier": "^3.6.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "globals": "^15.13.0"
   }
 }
